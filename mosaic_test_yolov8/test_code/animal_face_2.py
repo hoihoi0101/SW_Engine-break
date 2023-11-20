@@ -4,7 +4,7 @@ import cv2
 
 # model = 개인 경로에 맞게 수정해야함
 model = YOLO('C:/Capston/SW_Engine-break/mosaic_test_yolov8/models/yolov8n-face.pt')
-
+nose_cascade = cv2.CascadeClassifier('C:\Capston\SW_Engine-break\mosaic_test_yolov8\models\haarcascade_mcs_nose.xml')
 # 스티커 이미지 불러오기
 sticker_nose = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/red_nose.png', cv2.IMREAD_UNCHANGED)
 sticker_face = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/rudolph_horns.png', cv2.IMREAD_UNCHANGED)
@@ -22,14 +22,21 @@ cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
+ds_factor = 0.5
+
 # 인형 얼굴 씌우기 플래그
 overlay_flag = False
 
 while True:
     success, frame = cap.read()
+    frame = cv2.resize(frame, None, fx=ds_factor, fy=ds_factor, interpolation=cv2.INTER_AREA)
 
     # YOLO 모델로 얼굴 찾기
     faceRects = model(frame, stream=True)
+
+    #Haar_cascade로 코찾기
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    nose_rects = nose_cascade.detectMultiScale(gray, 1.3, 5)
 
     # 키 입력 확인
     key = cv2.waitKey(1)
@@ -46,6 +53,26 @@ while True:
 
     # 인형 얼굴 씌우기
     if overlay_flag:
+
+        # Haar_Cascade번 코 스티커
+        # for (x, y, w, h) in nose_rects:
+        #     # 좌표 조정하여 스티커 위치 조정 가능
+        #     nose_resized_sticker = cv2.resize(current_nose_img, (w, h))
+        #
+        #     # 알파 채널 있는 경우만 처리
+        #     if nose_resized_sticker.shape[2] == 4:
+        #         alpha_sticker = nose_resized_sticker[:, :, 3] / 255.0
+        #         alpha_frame = 1.0 - alpha_sticker
+        #
+        #         for c in range(0, 3):
+        #             frame[y:y + h, x:x + w, c] = (alpha_sticker * nose_resized_sticker[:, :, c] +
+        #                                           alpha_frame * frame[y:y + h, x:x + w, c])
+        #     else:
+        #         # 알파 채널이 없는 경우 처리
+        #         frame[y:y + h, x:x + w] = nose_resized_sticker[:, :, :3]
+        #
+        #     break
+
         for face in faceRects:
             boxes = face.boxes
 
@@ -82,34 +109,34 @@ while True:
 
                 frame[sticker_y:sticker_y + sticker_height, sticker_x:sticker_x + sticker_width] = sticker_area
 
-                #코 부분 스티커
-
-                # 스티커 크기 조정
-                nose_sticker_width = int(0.3 * w)
-                nose_sticker_height = int(0.3 * h)
-                nose_sticker_x =x1 - int((nose_sticker_width - w) / 2)
-                nose_sticker_y =y1 - int((nose_sticker_height - h) / 2)
-
-                # 스티커가 프레임을 벗어나지 않도록 좌표 보정
-                nose_sticker_x = max(nose_sticker_x, 0)
-                nose_sticker_y = max(nose_sticker_y, 0)
-
-                # 좌표 보정 후 스티커를 프레임에 적용
-                nose_sticker_area = frame[nose_sticker_y:nose_sticker_y + nose_sticker_height, nose_sticker_x:nose_sticker_x + nose_sticker_width]
-                nose_resized_sticker = cv2.resize(current_nose_img, (nose_sticker_area.shape[1], nose_sticker_area.shape[0]))
-
-                # 알파 채널 있는 경우만 처리
-                if nose_resized_sticker.shape[2] == 4:
-                    alpha_sticker = nose_resized_sticker[:, :, 3] / 255.0
-                    alpha_frame = 1.0 - alpha_sticker
-
-                    for c in range(0, 3):
-                        nose_sticker_area[:, :, c] = (alpha_sticker * nose_resized_sticker[:, :, c] +
-                                                 alpha_frame * nose_sticker_area[:, :, c])
-                else:
-                    nose_sticker_area[:, :] = nose_resized_sticker[:, :, :3]
-
-                frame[nose_sticker_y:nose_sticker_y + nose_sticker_height, nose_sticker_x:nose_sticker_x + nose_sticker_width] = nose_sticker_area
+                # #YOLO버전 코 부분 스티커
+                #
+                # # 스티커 크기 조정
+                # nose_sticker_width = int(0.3 * w)
+                # nose_sticker_height = int(0.3 * h)
+                # nose_sticker_x =x1 - int((nose_sticker_width - w) / 2)
+                # nose_sticker_y =y1 - int((nose_sticker_height - h) / 2)
+                #
+                # # 스티커가 프레임을 벗어나지 않도록 좌표 보정
+                # nose_sticker_x = max(nose_sticker_x, 0)
+                # nose_sticker_y = max(nose_sticker_y, 0)
+                #
+                # # 좌표 보정 후 스티커를 프레임에 적용
+                # nose_sticker_area = frame[nose_sticker_y:nose_sticker_y + nose_sticker_height, nose_sticker_x:nose_sticker_x + nose_sticker_width]
+                # nose_resized_sticker = cv2.resize(current_nose_img, (nose_sticker_area.shape[1], nose_sticker_area.shape[0]))
+                #
+                # # 알파 채널 있는 경우만 처리
+                # if nose_resized_sticker.shape[2] == 4:
+                #     alpha_sticker = nose_resized_sticker[:, :, 3] / 255.0
+                #     alpha_frame = 1.0 - alpha_sticker
+                #
+                #     for c in range(0, 3):
+                #         nose_sticker_area[:, :, c] = (alpha_sticker * nose_resized_sticker[:, :, c] +
+                #                                  alpha_frame * nose_sticker_area[:, :, c])
+                # else:
+                #     nose_sticker_area[:, :] = nose_resized_sticker[:, :, :3]
+                #
+                # frame[nose_sticker_y:nose_sticker_y + nose_sticker_height, nose_sticker_x:nose_sticker_x + nose_sticker_width] = nose_sticker_area
 
 
     cv2.imshow('Webcam', frame)

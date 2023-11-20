@@ -32,11 +32,12 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data"
+    "last_opened_file_path": "C:/Capston/SW_Engine-break/mosaic_test_yolov8/models"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Capston\SW_Engine-break\mosaic_test_yolov8\models" />
       <recent name="C:\Capston\SW_Engine-break\mosaic_test_yolov8\test_data" />
     </key>
   </component>
