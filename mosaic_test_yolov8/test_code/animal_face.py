@@ -8,10 +8,10 @@ import math
 
 
 # model = 개인 경로에 맞게 수정해야함
-# model = YOLO('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/models/best1027_3.pt')
-# model = YOLO('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/models/best1027_4.pt')
-# model = YOLO('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/models/yolov8n.pt')
-model = YOLO('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/models/yolov8n-face.pt')
+# model = YOLO('C:/Capston/SW_Engine-break/mosaic_test_yolov8/models/best1027_3.pt')
+# model = YOLO('C:/Capston/SW_Engine-break/mosaic_test_yolov8/models/best1027_4.pt')
+# model = YOLO('C:/Capston/SW_Engine-break/mosaic_test_yolov8/models/yolov8n.pt')
+model = YOLO('C:/Capston/SW_Engine-break/mosaic_test_yolov8/models/yolov8n-face.pt')
 
 
 

@@ -1,98 +1,35 @@
-from ultralytics import YOLO
 import cv2
-import math
+from ultralytics import YOLO
 
+# YOLO 모델 로드
+model = YOLO('C:/Capston/SW_Engine-break/mosaic_test_yolov8/models/yolov8n-face.pt')
 
-
-# model = 개인 경로에 맞게 수정해야함
-# model = YOLO('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/models/best1027_3.pt')
-# model = YOLO('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/models/best1027_4.pt')
-# model = YOLO('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/models/yolov8n.pt')
-model = YOLO('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/models/yolov8n-face.pt')
-
-
-
-
-# object classes (표기 클래스)
-# classNames = ["face","knife", "rokok"]
-classNames = ["face"]
-# classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat","traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat","dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella","handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat","baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup","fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli","carrot", "hot dog", "pizza", "donut", "cake", "chair", "sofa", "pottedplant", "bed","diningtable", "toilet", "tvmonitor", "laptop", "mouse", "remote", "keyboard", "cell phone","microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors","teddy bear", "hair drier", "toothbrush"]
-
-
-
-#start webcam
+# 웹캠 설정
 cap = cv2.VideoCapture(0)
-cap.set(3, 640)
-cap.set(4, 480)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
 while True:
-    success, img = cap.read()
-    results = model(img, stream=True)
-
-
-    for r in results:
-        boxes = r.boxes
-
-        for box in boxes:
-            # bounding box
-            x1, y1, x2, y2 = box.xyxy[0]
-            x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2) # convert to int values
-
-# #####
-#             # 박스 영역 모자이크 처리 코드 / 주석 처리하면 모자이크 사라짐
-#             face_roi = img[y1:y2, x1:x2]
-#             blurred_face = cv2.GaussianBlur(face_roi, (99, 99), 30)
-#             img[y1:y2, x1:x2] = blurred_face
-# #####
-
-
-
-#####
-            # 박스 그리기 / 주석 처리하면 박스 사라짐
-            cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 255), 3)
-#####
-
-
-            # 정확도 정보와 클래스 분류 print
-
-            # confidence
-            confidence = math.ceil((box.conf[0]*100))/100
-            print("Confidence --->",confidence)
-
-            # class name
-            cls = int(box.cls[0])
-            print("Class name -->", classNames[cls])
-
-#####
-            # 클래스이름 글씨 모양 설정, 캠에서 표시하는 코드 / 주석 처리하면 사라짐
-            # 글씨 모양 설정
-            org = [x1, y1]
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            fontScale = 1
-            color = (255, 0, 0)
-            thickness = 2
-            # 클래스 이름 표시 코드
-            cv2.putText(img, classNames[cls], org, font, fontScale, color, thickness)
-#####
-
-
-
-    cv2.imshow('Webcam', img)
-
-    ## Q 누르면 캠 종료
-    if cv2.waitKey(1) == ord('q'):
+    # 웹캠 프레임 읽기
+    ret, frame = cap.read()
+    if not ret:
         break
 
+    # YOLO 모델로 얼굴 찾기
+    faces = model(frame)
+
+    # 찾은 얼굴 영역 출력
+    for face in faces.xyxy[0]:
+        x1, y1, x2, y2, conf, cls = face[:6]  # 바운딩 박스 좌표 정보
+        cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+
+    # 화면에 얼굴 검출 결과 출력
+    cv2.imshow('Face Detection', frame)
+
+    # 'q' 키를 누르면 종료
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+# 종료
 cap.release()
 cv2.destroyAllWindows()
-
-
-
-
-
-# # 사진 한개 테스트용 코드 = 개인 경로에 맞게 수정해야함
-# result = model.predict("C:/Code/PROJECT/yolo_mosaic_test/models/test_data/k.jpg", save=True, conf=0.5)
-# plots = result[0].plot()
-# cv2.imshow("plot", plots)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
