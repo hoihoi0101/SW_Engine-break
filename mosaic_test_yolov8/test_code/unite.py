@@ -54,6 +54,14 @@ while True:
                     center_x = (x1 + x2) // 2
                     center_y = (y1 + y2) // 2
 
+                    # 키 번호에 따라 이미지를 적용할 위치 변경
+                    if idx == 0:  # '1'을 눌렀을 때
+                        center_x += 50  # 예시: x 좌표를 오른쪽으로 50 이동
+                    elif idx == 1:  # '2'를 눌렀을 때
+                        center_y += 50  # 예시: y 좌표를 아래로 50 이동
+                    elif idx == 3:  # '4'를 눌렀을 때
+                        start_y -= 300  # 예시: x 좌표를 왼쪽으로 50 이동
+
                     img_resized = cv2.resize(imgs[idx], (2 * (x2 - x1), 2 * (y2 - y1)))
 
                     start_x = max(center_x - (x2 - x1), 0)
