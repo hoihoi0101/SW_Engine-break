@@ -1,18 +1,39 @@
-# 얼굴 마스크 테스트 바운딩 박스 중앙 좌표 계산후 그위치에 이미지 합성하기 (그나마 나은 방법)
+# 얼굴 마스크 테스트 바운딩 박스 중앙 좌표 계산후 그 위치에 이미지 합성하기 (그나마 나은 방법)
 from ultralytics import YOLO
 import numpy as np
 import cv2
 
+# # 찬 주소
+# # model = 개인 경로에 맞게 수정해야함
+# model = YOLO('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/models/yolov8n-face.pt')
+# nose_cascade = cv2.CascadeClassifier('C:\Capston\SW_Engine-break\mosaic_test_yolov8\models\haarcascade_mcs_nose.xml')
+# # 스티커 이미지 불러오기
+#
+# #루돌프 스티커
+# sticker_nose = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/red_nose.png', cv2.IMREAD_UNCHANGED)
+# sticker_face = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/rudolph_horns.png', cv2.IMREAD_UNCHANGED)
+# #판다 탈 씌우기
+# tal_face = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/panda.png', cv2.IMREAD_UNCHANGED)
+# tal_nose = None
+# #광대 씌우기
+# tal_face2 = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/clown.png', cv2.IMREAD_UNCHANGED)
+# tal_nose2 = None
+
 # model = 개인 경로에 맞게 수정해야함
 model = YOLO('C:/Capston/SW_Engine-break/mosaic_test_yolov8/models/yolov8n-face.pt')
 nose_cascade = cv2.CascadeClassifier('C:\Capston\SW_Engine-break\mosaic_test_yolov8\models\haarcascade_mcs_nose.xml')
+
 # 스티커 이미지 불러오기
 #루돌프 스티커
 sticker_nose = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/red_nose.png', cv2.IMREAD_UNCHANGED)
 sticker_face = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/rudolph_horns.png', cv2.IMREAD_UNCHANGED)
 #판다 탈 씌우기
-tal_face = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/clown.png', cv2.IMREAD_UNCHANGED)
+tal_face = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/panda.png', cv2.IMREAD_UNCHANGED)
 tal_nose = None
+#광대 씌우기
+tal_face2 = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/clown.png', cv2.IMREAD_UNCHANGED)
+tal_nose2 = None
+
 # # clown 이미지 크기 조정. 여기서는 0.8 설정
 # doll_face_img2 = cv2.resize(doll_face_img2, (0, 0), fx=0.8, fy=0.8)
 
@@ -40,9 +61,6 @@ while True:
     # YOLO 모델로 얼굴 찾기
     faceRects = model(frame, stream=True)
 
-    #Haar_cascade로 코찾기
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    nose_rects = nose_cascade.detectMultiScale(gray, 1.3, 5)
 
     # 키 입력 확인
     key = cv2.waitKey(1)
@@ -66,7 +84,11 @@ while True:
     if overlay_flag:
 
         #Haar_Cascade번 코 스티커
-        if C_count != 1:
+        if C_count != 1 :
+            # Haar_cascade로 코찾기
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            nose_rects = nose_cascade.detectMultiScale(gray, 1.3, 5)
+
             for (x, y, w, h) in nose_rects:
                 # 좌표 조정하여 스티커 위치 조정 가능
                 nose_resized_sticker = cv2.resize(current_nose_img, (w, h))
@@ -102,16 +124,20 @@ while True:
                     current_face_height = int(1.5 * h)
                     current_face_x = int((current_face_width - w) / 2)
                     current_face_y = int((current_face_height - h) * 2 + 10)
+
                 #판다 탈의 크기 및 위치
                 elif C_count == 1:
+                    current_face_width = int(1.9 * w)
+                    current_face_height = int(1.5 * h)
+                    current_face_x = int((current_face_width - w) / 2)
+                    current_face_y = int((current_face_height - h) / 2 + 35)
+
+                # 광대 탈의 크기 및 위치
+                elif C_count == 2:
                     current_face_width = int(1.0 * w)
                     current_face_height = int(1.0 * h)
                     current_face_x = int((current_face_width - w) / 2)
                     current_face_y = int((current_face_height - h) / 2 + 10)
-                    # current_face_width = int(1.9 * w)
-                    # current_face_height = int(1.5 * h)
-                    # current_face_x = int((current_face_width - w) / 2)
-                    # current_face_y = int((current_face_height - h) / 2 + 35)
 
 
 
