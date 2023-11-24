@@ -3,39 +3,37 @@ from ultralytics import YOLO
 import numpy as np
 import cv2
 
-# # 찬 주소
-# # model = 개인 경로에 맞게 수정해야함
-# model = YOLO('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/models/yolov8n-face.pt')
-# nose_cascade = cv2.CascadeClassifier('C:\Capston\SW_Engine-break\mosaic_test_yolov8\models\haarcascade_mcs_nose.xml')
-# # 스티커 이미지 불러오기
-#
-# #루돌프 스티커
-# sticker_nose = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/red_nose.png', cv2.IMREAD_UNCHANGED)
-# sticker_face = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/rudolph_horns.png', cv2.IMREAD_UNCHANGED)
-# #판다 탈 씌우기
-# tal_face = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/panda.png', cv2.IMREAD_UNCHANGED)
-# tal_nose = None
-# #광대 씌우기
-# tal_face2 = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/clown.png', cv2.IMREAD_UNCHANGED)
-# tal_nose2 = None
-
+# 찬 주소
 # model = 개인 경로에 맞게 수정해야함
-model = YOLO('C:/Capston/SW_Engine-break/mosaic_test_yolov8/models/yolov8n-face.pt')
-nose_cascade = cv2.CascadeClassifier('C:\Capston\SW_Engine-break\mosaic_test_yolov8\models\haarcascade_mcs_nose.xml')
-
+model = YOLO('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/models/yolov8n-face.pt')
+nose_cascade = cv2.CascadeClassifier('C:\Code\PROJECT\SW_Engine-break\mosaic_test_yolov8\models\haarcascade_mcs_nose.xml')
 # 스티커 이미지 불러오기
 #루돌프 스티커
-sticker_nose = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/red_nose.png', cv2.IMREAD_UNCHANGED)
-sticker_face = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/rudolph_horns.png', cv2.IMREAD_UNCHANGED)
+sticker_nose = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/red_nose.png', cv2.IMREAD_UNCHANGED)
+sticker_face = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/rudolph_horns.png', cv2.IMREAD_UNCHANGED)
+# 코제거
+NONE_nose = None
 #판다 탈 씌우기
-tal_face = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/panda.png', cv2.IMREAD_UNCHANGED)
-tal_nose = None
+tal_face = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/panda.png', cv2.IMREAD_UNCHANGED)
 #광대 씌우기
-tal_face2 = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/clown.png', cv2.IMREAD_UNCHANGED)
-tal_nose2 = None
+tal_face2 = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/clown.png', cv2.IMREAD_UNCHANGED)
 
-# # clown 이미지 크기 조정. 여기서는 0.8 설정
-# doll_face_img2 = cv2.resize(doll_face_img2, (0, 0), fx=0.8, fy=0.8)
+# #경호 주소
+# # model = 개인 경로에 맞게 수정해야함
+# model = YOLO('C:/Capston/SW_Engine-break/mosaic_test_yolov8/models/yolov8n-face.pt')
+# nose_cascade = cv2.CascadeClassifier('C:\Capston\SW_Engine-break\mosaic_test_yolov8\models\haarcascade_mcs_nose.xml')
+# # 스티커 이미지 불러오기
+# #루돌프 스티커
+# sticker_nose = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/red_nose.png', cv2.IMREAD_UNCHANGED)
+# sticker_face = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/rudolph_horns.png', cv2.IMREAD_UNCHANGED)
+# #판다 탈 씌우기
+# tal_face = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/panda.png', cv2.IMREAD_UNCHANGED)
+# tal_nose = None
+# #광대 씌우기
+# tal_face2 = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/clown.png', cv2.IMREAD_UNCHANGED)
+# tal_nose2 = None
+
+
 
 # 현재 인형 얼굴 이미지
 current_nose_img = sticker_nose
@@ -70,12 +68,17 @@ while True:
         # 현재 인형 얼굴 이미지 변경
         if np.array_equal(current_face_img, sticker_face) and np.array_equal(current_nose_img, sticker_nose) :
             current_face_img = tal_face
-            current_nose_img = tal_nose
+            current_nose_img = NONE_nose
             C_count = 1
-        elif np.array_equal(current_face_img, tal_face) and np.array_equal(current_nose_img, tal_nose):
+        elif np.array_equal(current_face_img, tal_face) and np.array_equal(current_nose_img, NONE_nose):
+            current_face_img = tal_face2
+            current_nose_img = NONE_nose
+            C_count = 2
+        elif np.array_equal(current_face_img, tal_face2) and np.array_equal(current_nose_img, NONE_nose):
             current_face_img = sticker_face
             current_nose_img = sticker_nose
             C_count = 0
+
 
     elif key == ord('q'):
         break  # 'q'를 누르면 종료
@@ -84,7 +87,7 @@ while True:
     if overlay_flag:
 
         #Haar_Cascade번 코 스티커
-        if C_count != 1 :
+        if C_count == 0 :
             # Haar_cascade로 코찾기
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             nose_rects = nose_cascade.detectMultiScale(gray, 1.3, 5)
@@ -134,10 +137,10 @@ while True:
 
                 # 광대 탈의 크기 및 위치
                 elif C_count == 2:
-                    current_face_width = int(1.0 * w)
-                    current_face_height = int(1.0 * h)
+                    current_face_width = int(1.3 * w)
+                    current_face_height = int(1.3 * h)
                     current_face_x = int((current_face_width - w) / 2)
-                    current_face_y = int((current_face_height - h) / 2 + 10)
+                    current_face_y = int((current_face_height - h) / 2 )
 
 
 
