@@ -54,24 +54,24 @@ while True:
     # 인형 얼굴 씌우기
     if overlay_flag:
 
-        # Haar_Cascade번 코 스티커
-        # for (x, y, w, h) in nose_rects:
-        #     # 좌표 조정하여 스티커 위치 조정 가능
-        #     nose_resized_sticker = cv2.resize(current_nose_img, (w, h))
-        #
-        #     # 알파 채널 있는 경우만 처리
-        #     if nose_resized_sticker.shape[2] == 4:
-        #         alpha_sticker = nose_resized_sticker[:, :, 3] / 255.0
-        #         alpha_frame = 1.0 - alpha_sticker
-        #
-        #         for c in range(0, 3):
-        #             frame[y:y + h, x:x + w, c] = (alpha_sticker * nose_resized_sticker[:, :, c] +
-        #                                           alpha_frame * frame[y:y + h, x:x + w, c])
-        #     else:
-        #         # 알파 채널이 없는 경우 처리
-        #         frame[y:y + h, x:x + w] = nose_resized_sticker[:, :, :3]
-        #
-        #     break
+        #Haar_Cascade번 코 스티커
+        for (x, y, w, h) in nose_rects:
+            # 좌표 조정하여 스티커 위치 조정 가능
+            nose_resized_sticker = cv2.resize(current_nose_img, (w, h))
+
+            # 알파 채널 있는 경우만 처리
+            if nose_resized_sticker.shape[2] == 4:
+                alpha_sticker = nose_resized_sticker[:, :, 3] / 255.0
+                alpha_frame = 1.0 - alpha_sticker
+
+                for c in range(0, 3):
+                    frame[y:y + h, x:x + w, c] = (alpha_sticker * nose_resized_sticker[:, :, c] +
+                                                  alpha_frame * frame[y:y + h, x:x + w, c])
+            else:
+                # 알파 채널이 없는 경우 처리
+                frame[y:y + h, x:x + w] = nose_resized_sticker[:, :, :3]
+
+            break
 
         for face in faceRects:
             boxes = face.boxes
