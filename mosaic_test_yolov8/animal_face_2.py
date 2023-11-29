@@ -3,35 +3,23 @@ from ultralytics import YOLO
 import numpy as np
 import cv2
 
-# 찬 주소
-# model = 개인 경로에 맞게 수정해야함
-model = YOLO('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/models/yolov8n-face.pt')
-nose_cascade = cv2.CascadeClassifier('C:\Code\PROJECT\SW_Engine-break\mosaic_test_yolov8\models\haarcascade_mcs_nose.xml')
+
+model = YOLO('models/yolov8n-face.pt')
+nose_cascade = cv2.CascadeClassifier('models\haarcascade_mcs_nose.xml')
 # 스티커 이미지 불러오기
+
 #루돌프 스티커
-sticker_nose = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/red_nose.png', cv2.IMREAD_UNCHANGED)
-sticker_face = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/rudolph_horns.png', cv2.IMREAD_UNCHANGED)
+sticker_nose = cv2.imread('test_data/red_nose.png', cv2.IMREAD_UNCHANGED)
+sticker_face = cv2.imread('test_data/rudolph_horns.png', cv2.IMREAD_UNCHANGED)
+
 # 코제거
 NONE_nose = None
 #판다 탈 씌우기
-tal_face = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/panda.png', cv2.IMREAD_UNCHANGED)
+tal_face = cv2.imread('test_data/panda.png', cv2.IMREAD_UNCHANGED)
 #광대 씌우기
-tal_face2 = cv2.imread('C:/Code/PROJECT/SW_Engine-break/mosaic_test_yolov8/test_data/clown.png', cv2.IMREAD_UNCHANGED)
-
-# #경호 주소
-# # model = 개인 경로에 맞게 수정해야함
-# model = YOLO('C:/Capston/SW_Engine-break/mosaic_test_yolov8/models/yolov8n-face.pt')
-# nose_cascade = cv2.CascadeClassifier('C:\Capston\SW_Engine-break\mosaic_test_yolov8\models\haarcascade_mcs_nose.xml')
-# # 스티커 이미지 불러오기
-# #루돌프 스티커
-# sticker_nose = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/red_nose.png', cv2.IMREAD_UNCHANGED)
-# sticker_face = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/rudolph_horns.png', cv2.IMREAD_UNCHANGED)
-# #판다 탈 씌우기
-# tal_face = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/panda.png', cv2.IMREAD_UNCHANGED)
-# tal_nose = None
-# #광대 씌우기
-# tal_face2 = cv2.imread('C:/Capston/SW_Engine-break/mosaic_test_yolov8/test_data/clown.png', cv2.IMREAD_UNCHANGED)
-# tal_nose2 = None
+tal_face2 = cv2.imread('test_data/clown.png', cv2.IMREAD_UNCHANGED)
+#산타 씌우기
+santa_face = cv2.imread('test_data/santa.png', cv2.IMREAD_UNCHANGED)
 
 
 
@@ -75,6 +63,10 @@ while True:
             current_nose_img = NONE_nose
             C_count = 2
         elif np.array_equal(current_face_img, tal_face2) and np.array_equal(current_nose_img, NONE_nose):
+            current_face_img = santa_face
+            current_nose_img = NONE_nose
+            C_count = 3
+        elif np.array_equal(santa_face, tal_face2) and np.array_equal(current_nose_img, NONE_nose):
             current_face_img = sticker_face
             current_nose_img = sticker_nose
             C_count = 0
@@ -140,7 +132,15 @@ while True:
                     current_face_width = int(1.3 * w)
                     current_face_height = int(1.3 * h)
                     current_face_x = int((current_face_width - w) / 2)
-                    current_face_y = int((current_face_height - h) / 2 )
+                    current_face_y = int((current_face_height - h) / 2)
+
+                # 산타 탈의 크기 및 위치
+                elif C_count == 3:
+                    current_face_width = int(2 * w)
+                    current_face_height = int(2 * h)
+                    current_face_x = int((current_face_width - w) / 2 - 20 )
+                    current_face_y = int((current_face_height - h) / 2 + 10 )
+
 
 
 
