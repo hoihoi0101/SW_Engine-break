@@ -12,6 +12,15 @@ nose_cascade = cv2.CascadeClassifier('models\haarcascade_mcs_nose.xml')
 sticker_nose = cv2.imread('test_data/red_nose.png', cv2.IMREAD_UNCHANGED)
 sticker_face = cv2.imread('test_data/rudolph_horns.png', cv2.IMREAD_UNCHANGED)
 
+#빵모자와 콧수염
+suyum_nose = cv2.imread('test_data/suyum.png', cv2.IMREAD_UNCHANGED)
+bbang_face = cv2.imread('test_data/bbang_hat.png', cv2.IMREAD_UNCHANGED)
+
+#안경과 모자
+cap_face = cv2.imread('test_data/cap.png', cv2.IMREAD_UNCHANGED)
+glasses_nose = cv2.imread('test_data/glasses.png', cv2.IMREAD_UNCHANGED)
+
+
 # 코제거
 NONE_nose = None
 #판다 탈 씌우기
@@ -20,6 +29,7 @@ tal_face = cv2.imread('test_data/panda.png', cv2.IMREAD_UNCHANGED)
 tal_face2 = cv2.imread('test_data/clown.png', cv2.IMREAD_UNCHANGED)
 #산타 씌우기
 santa_face = cv2.imread('test_data/santa.png', cv2.IMREAD_UNCHANGED)
+
 
 
 
@@ -66,10 +76,20 @@ while True:
             current_face_img = santa_face
             current_nose_img = NONE_nose
             C_count = 3
-        elif np.array_equal(santa_face, tal_face2) and np.array_equal(current_nose_img, NONE_nose):
+        elif np.array_equal(current_face_img, santa_face) and np.array_equal(current_nose_img, NONE_nose):
+            current_face_img = bbang_face
+            current_nose_img = suyum_nose
+            C_count = 4
+        elif np.array_equal(current_face_img, bbang_face) and np.array_equal(current_nose_img, suyum_nose):
+            current_face_img = cap_face
+            current_nose_img = glasses_nose
+            C_count = 5
+        elif np.array_equal(current_face_img, cap_face) and np.array_equal(current_nose_img, glasses_nose):
             current_face_img = sticker_face
             current_nose_img = sticker_nose
             C_count = 0
+
+
 
 
     elif key == ord('q'):
@@ -101,6 +121,54 @@ while True:
                     frame[y:y + h, x:x + w] = nose_resized_sticker[:, :, :3]
 
                 break
+
+        # 콧수염 코 스티커
+        if C_count == 4:
+            # Haar_cascade로 코찾기
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            nose_rects = nose_cascade.detectMultiScale(gray, 4, 5)
+
+            for (x, y, w, h) in nose_rects:
+                # 좌표 조정하여 스티커 위치 조정 가능
+                nose_resized_sticker = cv2.resize(current_nose_img, (w, h))
+                y = y + 30
+                # 알파 채널 있는 경우만 처리
+                if nose_resized_sticker.shape[2] == 4:
+                    alpha_sticker = nose_resized_sticker[:, :, 3] / 255.0
+                    alpha_frame = 1.0 - alpha_sticker
+
+                    for c in range(0, 3):
+                        frame[y:y + h, x:x + w, c] = (alpha_sticker * nose_resized_sticker[:, :, c] +
+                                                      alpha_frame * frame[y:y + h, x:x + w, c])
+                else:
+                    # 알파 채널이 없는 경우 처리
+                    frame[y:y + h, x:x + w] = nose_resized_sticker[:, :, :3]
+
+                break
+
+        # # 안경 코 스티커
+        # if C_count == 5:
+        #     # Haar_cascade로 코찾기
+        #     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        #     nose_rects = nose_cascade.detectMultiScale(gray, 2, 5)
+        #
+        #     for (x, y, w, h) in nose_rects:
+        #         # 좌표 조정하여 스티커 위치 조정 가능
+        #         nose_resized_sticker = cv2.resize(current_nose_img, (w, h))
+        #
+        #         # 알파 채널 있는 경우만 처리
+        #         if nose_resized_sticker.shape[2] == 4:
+        #             alpha_sticker = nose_resized_sticker[:, :, 3] / 255.0
+        #             alpha_frame = 1.0 - alpha_sticker
+        #
+        #             for c in range(0, 3):
+        #                 frame[y:y + h, x:x + w, c] = (alpha_sticker * nose_resized_sticker[:, :, c] +
+        #                                               alpha_frame * frame[y:y + h, x:x + w, c])
+        #         else:
+        #             # 알파 채널이 없는 경우 처리
+        #             frame[y:y + h, x:x + w] = nose_resized_sticker[:, :, :3]
+        #
+        #         break
 
         for face in faceRects:
             boxes = face.boxes
@@ -140,6 +208,20 @@ while True:
                     current_face_height = int(2 * h)
                     current_face_x = int((current_face_width - w) / 2 - 20 )
                     current_face_y = int((current_face_height - h) / 2 + 10 )
+
+                # 빵 모자의 크기 및 위치
+                elif C_count == 4:
+                    current_face_width = int(1.5 * w)
+                    current_face_height = int(1.5 * h)
+                    current_face_x = int((current_face_width - w) / 2 )
+                    current_face_y = int((current_face_height - h) / 2 + 100)
+
+                # 캡 모자의 크기 및 위치
+                elif C_count == 5:
+                    current_face_width = int(1.5 * w)
+                    current_face_height = int(1 * h)
+                    current_face_x = int((current_face_width - w) / 2 )
+                    current_face_y = int((current_face_height - h) / 2 + 100)
 
 
 
